@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Tunify_Platform.Data;
 using Tunify_Platform.Models;
+using Tunify_Platform.Repositories.Interfaces;
 
 namespace Tunify_Platform.Controllers
 {
@@ -14,111 +15,67 @@ namespace Tunify_Platform.Controllers
     [ApiController]
     public class PlaylistsController : ControllerBase
     {
-        private readonly TunifyDbContext _context;
+        private readonly IPlaylistRepository _playlistRepository;
 
-        public PlaylistsController(TunifyDbContext context)
+        public PlaylistsController(IPlaylistRepository playlistRepository)
         {
-            _context = context;
+            _playlistRepository = playlistRepository;
         }
 
         // GET: api/Playlists
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Playlist>>> GetPlaylist()
+        public async Task<ActionResult<IEnumerable<Playlist>>> GetAllPlaylists()
         {
-          if (_context.Playlist == null)
-          {
-              return NotFound();
-          }
-            return await _context.Playlist.ToListAsync();
+            return Ok(await _playlistRepository.GetAllPlaylistsAsync());
         }
 
         // GET: api/Playlists/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Playlist>> GetPlaylist(int id)
+        public async Task<ActionResult<Playlist>> GetPlaylistById(int id)
         {
-          if (_context.Playlist == null)
-          {
-              return NotFound();
-          }
-            var playlist = await _context.Playlist.FindAsync(id);
-
+            var playlist = await _playlistRepository.GetPlaylistByIdAsync(id);
             if (playlist == null)
             {
                 return NotFound();
             }
-
             return playlist;
         }
 
         // PUT: api/Playlists/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutPlaylist(int id, Playlist playlist)
+        public async Task<IActionResult> UpdatePlaylist(int id, Playlist playlist)
         {
             if (id != playlist.PlaylistId)
             {
                 return BadRequest();
             }
 
-            _context.Entry(playlist).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!PlaylistExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
+            await _playlistRepository.UpdatePlaylistAsync(playlist);
             return NoContent();
         }
 
         // POST: api/Playlists
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Playlist>> PostPlaylist(Playlist playlist)
+        public async Task<ActionResult<Playlist>> AddPlaylist(Playlist playlist)
         {
-          if (_context.Playlist == null)
-          {
-              return Problem("Entity set 'TunifyDbContext.Playlist'  is null.");
-          }
-            _context.Playlist.Add(playlist);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetPlaylist", new { id = playlist.PlaylistId }, playlist);
+            await _playlistRepository.AddPlaylistAsync(playlist);
+            return CreatedAtAction(nameof(GetPlaylistById), new { id = playlist.PlaylistId }, playlist);
         }
 
         // DELETE: api/Playlists/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeletePlaylist(int id)
         {
-            if (_context.Playlist == null)
-            {
-                return NotFound();
-            }
-            var playlist = await _context.Playlist.FindAsync(id);
+            var playlist = await _playlistRepository.GetPlaylistByIdAsync(id);
             if (playlist == null)
             {
                 return NotFound();
             }
 
-            _context.Playlist.Remove(playlist);
-            await _context.SaveChangesAsync();
-
+            await _playlistRepository.DeletePlaylistAsync(id);
             return NoContent();
-        }
-
-        private bool PlaylistExists(int id)
-        {
-            return (_context.Playlist?.Any(e => e.PlaylistId == id)).GetValueOrDefault();
         }
     }
 }
