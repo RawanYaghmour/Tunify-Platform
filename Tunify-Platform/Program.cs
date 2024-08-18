@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json.Serialization;
 using Tunify_Platform.Data;
 using Tunify_Platform.Repositories.Interfaces;
 using Tunify_Platform.Repositories.Services;
@@ -11,16 +12,22 @@ namespace Tunify_Platform
         {
             var builder = WebApplication.CreateBuilder(args);
             builder.Services.AddControllers();
-
+            builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
+    });
             string ConnectionStringVar = builder.Configuration.GetConnectionString("DefaultConnection");
 
             builder.Services.AddDbContext<TunifyDbContext>(optionsX => optionsX.UseSqlServer(ConnectionStringVar));
+
 
             //for Repoditory pattern
             builder.Services.AddScoped<IUserRepository, UserRepository>();
             builder.Services.AddScoped<IPlaylistRepository, PlaylistRepository>();
             builder.Services.AddScoped<ISongRepository, SongRepository>();
             builder.Services.AddScoped<IArtistRepository, ArtistRepository>();
+
 
 
             var app = builder.Build();
