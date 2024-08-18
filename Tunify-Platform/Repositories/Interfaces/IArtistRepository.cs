@@ -12,5 +12,7 @@ namespace Tunify_Platform.Repositories.Interfaces
         Task AddArtistAsync(Artist artist);
         Task UpdateArtistAsync(Artist artist);
         Task DeleteArtistAsync(int id);
+        Task<Song> AddSongToArtist(int artistId, int songId);
+        Task<List<Song>> GetAllSongsFromArtist(int artistId);
     }
 }

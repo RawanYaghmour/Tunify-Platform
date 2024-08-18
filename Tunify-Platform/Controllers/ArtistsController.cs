@@ -47,7 +47,7 @@ namespace Tunify_Platform.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateArtist(int id, Artist artist)
         {
-            if (id != artist.ArtistId)
+            if (id != artist.Id)
             {
                 return BadRequest();
             }
@@ -62,7 +62,7 @@ namespace Tunify_Platform.Controllers
         public async Task<ActionResult<Artist>> AddArtist(Artist artist)
         {
             await _artistRepository.AddArtistAsync(artist);
-            return CreatedAtAction(nameof(GetArtistById), new { id = artist.ArtistId }, artist);
+            return CreatedAtAction(nameof(GetArtistById), new { id = artist.Id }, artist);
         }
 
         // DELETE: api/Artists/5
@@ -77,6 +77,22 @@ namespace Tunify_Platform.Controllers
 
             await _artistRepository.DeleteArtistAsync(id);
             return NoContent();
+        }
+
+
+        // api/Artists/{artistId}/songs/{songId}
+        [HttpPost("{artistId}/songs/{songId}")]
+        public async Task<Song> AddSongToArtist(int artistId, int songId)
+        {
+            var Song = await _artistRepository.AddSongToArtist(artistId, songId);
+            return Song;
+        }
+        // api/Artists/{artistId}/songs
+        [HttpGet("{artistId}/songs")]
+        public async Task<ActionResult<IEnumerable<Song>>> GetAllSongsFromArtist(int artistId)
+        {
+            var Song = await _artistRepository.GetAllSongsFromArtist(artistId);
+            return Song;
         }
     }
 }

@@ -46,7 +46,7 @@ namespace Tunify_Platform.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateSong(int id, Song song)
         {
-            if (id != song.SongId)
+            if (id != song.Id)
             {
                 return BadRequest();
             }
@@ -61,7 +61,7 @@ namespace Tunify_Platform.Controllers
         public async Task<ActionResult<Song>> AddSong(Song song)
         {
             await _songRepository.AddSongAsync(song);
-            return CreatedAtAction(nameof(GetSongById), new { id = song.SongId }, song);
+            return CreatedAtAction(nameof(GetSongById), new { id = song.Id }, song);
         }
 
         // DELETE: api/Songs/5
