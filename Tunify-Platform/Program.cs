@@ -30,10 +30,43 @@ namespace Tunify_Platform
 
 
 
+            // swagger configuration
+            builder.Services.AddSwaggerGen(options =>
+            {
+                options.SwaggerDoc("tunifyApi", new Microsoft.OpenApi.Models.OpenApiInfo
+                {
+                    Title = "Tunify API",
+                    Version = "v1",
+                    Description = "API for managing playlists, songs, and artists in the Tunify Platform"
+                });
+            });
+
+
+
             var app = builder.Build();
+
+
+
+            // call swagger service
+            app.UseSwagger(
+             options =>
+             {
+                 options.RouteTemplate = "api/{documentName}/swagger.json";
+             });
+
+            // call swagger UI
+            app.UseSwaggerUI(options =>
+            {
+                options.SwaggerEndpoint("/api/tunifyApi/swagger.json", "Tunify API v1");
+                options.RoutePrefix = "";
+            });
+
+
+
+
             app.MapControllers();
 
-            app.MapGet("/", () => "Hello World!");
+           // app.MapGet("/", () => "Hello World!");
 
             app.Run();
         }
