@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
 using Tunify_Platform.Data;
+using Tunify_Platform.Models;
 using Tunify_Platform.Repositories.Interfaces;
 using Tunify_Platform.Repositories.Services;
 
@@ -24,13 +25,7 @@ namespace Tunify_Platform
 
 
 
-            // Identity
-            builder.Services.AddIdentity<IdentityUser, IdentityRole>()
-                .AddEntityFrameworkStores<TunifyDbContext>();
-
-            //builder.Services
-            builder.Services.AddScoped<IAccountRepository, IdentityAccountService>();
-
+           
 
 
 
@@ -39,6 +34,14 @@ namespace Tunify_Platform
             builder.Services.AddScoped<IPlaylistRepository, PlaylistRepository>();
             builder.Services.AddScoped<ISongRepository, SongRepository>();
             builder.Services.AddScoped<IArtistRepository, ArtistRepository>();
+
+
+            // Identity
+            builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
+                .AddEntityFrameworkStores<TunifyDbContext>();
+
+            //builder.Services
+            builder.Services.AddScoped<IAccountRepository, IdentityAccountService>();
 
 
 
@@ -57,9 +60,7 @@ namespace Tunify_Platform
 
             var app = builder.Build();
 
-            //app.UseAuthentication();
-            app.UseAuthentication();
-
+            
 
 
             // call swagger service
@@ -76,6 +77,8 @@ namespace Tunify_Platform
                 options.RoutePrefix = "";
             });
 
+            //app.UseAuthentication();
+            app.UseAuthentication();
 
 
 

@@ -8,6 +8,6 @@ namespace Tunify_Platform.Repositories.Interfaces
 
         public Task<AccountDto> UserAuthentication(string username, string password);
 
-        public Task<AccountDto> LogOut(string username);
+        public Task<AccountDto> LogOutAsync(string username);
     }
 }

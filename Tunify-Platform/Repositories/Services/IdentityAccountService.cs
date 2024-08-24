@@ -54,26 +54,27 @@ namespace Tunify_Platform.Repositories.Services
             return null;
         }
 
-        // logout
-        public async Task<AccountDto> LogOut(string username)
+        // Logout
+        public async Task<AccountDto> LogOutAsync(string username)
         {
-            var logoutAccount = await _userManager.FindByNameAsync(username);
-            if (logoutAccount == null)
+            var user = await _userManager.FindByNameAsync(username);
+
+            if (user == null)
             {
-                // Handle user not found case
+                // Handle case when the user is not found
                 return null;
             }
 
-            // Clear the authentication cookie or token here
+            // Perform the sign-out operation to clear the authentication cookie or token
             await _signInManager.SignOutAsync();
 
-            var result = new AccountDto()
+            // Return the account details of the logged-out user
+            return new AccountDto
             {
-                Id = logoutAccount.Id,
-                Username = logoutAccount.UserName
+                Id = user.Id,
+                Username = user.UserName
             };
-
-            return result;
         }
+
     }
 }

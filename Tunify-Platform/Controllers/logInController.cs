@@ -42,9 +42,9 @@ namespace Tunify_Platform.Controllers
 
         // logout
         [HttpPost("Logout")]
-        public async Task<ActionResult<AccountDto>> LogOut(string username)
+        public async Task<ActionResult<AccountDto>> LogOutAsync(string username)
         {
-            var newLogout = await _accountService.LogOut(username);
+            var newLogout = await _accountService.LogOutAsync(username);
             return newLogout;
         }
     }
