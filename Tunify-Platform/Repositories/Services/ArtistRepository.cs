@@ -60,12 +60,8 @@ namespace Tunify_Platform.Repositories.Services
 
         public async Task<List<Song>> GetAllSongsFromArtist(int artistId)
         {
-            var songs = await _context.Song
-                .Where(s => s.ArtistId == artistId)
-                .Include(s => s.Artist) // Eagerly load the Artist entity
-                .ToListAsync();
-
-            return songs;
+            var Song = await _context.Song.Where(s => s.ArtistId == artistId).ToListAsync();
+            return Song;
         }
 
     }

@@ -1,6 +1,8 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
 using Tunify_Platform.Data;
+using Tunify_Platform.Models;
 using Tunify_Platform.Repositories.Interfaces;
 using Tunify_Platform.Repositories.Services;
 
@@ -22,11 +24,24 @@ namespace Tunify_Platform
             builder.Services.AddDbContext<TunifyDbContext>(optionsX => optionsX.UseSqlServer(ConnectionStringVar));
 
 
+
+           
+
+
+
             //for Repoditory pattern
             builder.Services.AddScoped<IUserRepository, UserRepository>();
             builder.Services.AddScoped<IPlaylistRepository, PlaylistRepository>();
             builder.Services.AddScoped<ISongRepository, SongRepository>();
             builder.Services.AddScoped<IArtistRepository, ArtistRepository>();
+
+
+            // Identity
+            builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
+                .AddEntityFrameworkStores<TunifyDbContext>();
+
+            //builder.Services
+            builder.Services.AddScoped<IAccountRepository, IdentityAccountService>();
 
 
 
@@ -45,6 +60,7 @@ namespace Tunify_Platform
 
             var app = builder.Build();
 
+            
 
 
             // call swagger service
@@ -61,6 +77,8 @@ namespace Tunify_Platform
                 options.RoutePrefix = "";
             });
 
+            //app.UseAuthentication();
+            app.UseAuthentication();
 
 
 
