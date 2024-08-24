@@ -60,6 +60,58 @@ The Repository Design Pattern is a software design pattern that mediates data ac
 
 By implementing the Repository Design Pattern in the Tunify Platform, we ensure that our application remains modular, maintainable, and adaptable to future changes.
 
+
+## 🔐 Identity Setup
+
+The Tunify Platform implements user authentication using ASP.NET Core Identity. This section outlines how to register, log in, and log out users.
+
+### 📋 Registration
+
+1. **Navigate to the Registration Page**:
+   - Access the registration endpoint at `/Account/Register`.
+
+2. **Fill in the Registration Form**:
+   - Provide the following details:
+     - **Username**
+     - **Email**
+     - **Password**
+
+3. **Submit the Form**:
+   - Click the "Register" button to create your account.
+
+4. **Confirmation**:
+   - If registration is successful, you will be redirected to the login page.
+
+### 🔑 Login
+
+1. **Navigate to the Login Page**:
+   - Access the login endpoint at `/Account/Login`.
+
+2. **Fill in the Login Form**:
+   - Enter your **Username** and **Password**.
+
+3. **Submit the Form**:
+   - Click the "Login" button to authenticate.
+
+4. **Access Granted**:
+   - Upon successful login, you will be redirected to the main dashboard of the Tunify Platform.
+
+### 🚪 Logout
+
+1. **Initiate Logout**:
+   - Click the "Logout" button available in the user menu or access the logout endpoint at `/Account/Logout`.
+
+2. **Confirmation**:
+   - You will be signed out and redirected to the home page.
+
+### ⚠️ Error Handling
+
+- If any error occurs during registration or login, appropriate messages will be displayed.
+- Ensure to handle validation errors such as duplicate usernames or weak passwords.
+
+
+
+
 ## 🚀 Getting Started
 
 Follow the steps to set up and run the Tunify Platform:
