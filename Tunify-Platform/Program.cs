@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
 using Tunify_Platform.Data;
@@ -22,6 +23,17 @@ namespace Tunify_Platform
             builder.Services.AddDbContext<TunifyDbContext>(optionsX => optionsX.UseSqlServer(ConnectionStringVar));
 
 
+
+            // Identity
+            builder.Services.AddIdentity<IdentityUser, IdentityRole>()
+                .AddEntityFrameworkStores<TunifyDbContext>();
+
+            //builder.Services
+            builder.Services.AddScoped<IAccountRepository, IdentityAccountService>();
+
+
+
+
             //for Repoditory pattern
             builder.Services.AddScoped<IUserRepository, UserRepository>();
             builder.Services.AddScoped<IPlaylistRepository, PlaylistRepository>();
@@ -44,6 +56,9 @@ namespace Tunify_Platform
 
 
             var app = builder.Build();
+
+            //app.UseAuthentication();
+            app.UseAuthentication();
 
 
 
