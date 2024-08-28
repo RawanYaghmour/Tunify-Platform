@@ -59,14 +59,7 @@ namespace Tunify_Platform
                     options.TokenValidationParameters = JwtTokenService.ValidatToken(builder.Configuration);
                 }
                 );
-            builder.Services.AddAuthorization(options =>
-            {
-                options.AddPolicy("RequireAdminRole", policy => policy.RequireRole("Admin"));
-                options.AddPolicy("RequireUpdatePermission", policy =>
-                    policy.RequireClaim("permission", "update"));
-                options.AddPolicy("RequireFullAccess", policy =>
-                    policy.RequireClaim("permission", "full_access"));
-            });
+            
 
 
 
