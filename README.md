@@ -110,6 +110,102 @@ The Tunify Platform implements user authentication using ASP.NET Core Identity. 
 - Ensure to handle validation errors such as duplicate usernames or weak passwords.
 
 
+## 🔐 JWT-Based Authentication and Authorization
+
+In this lab, the Tunify Platform has been extended to include JWT-based authentication and authorization. This section provides details on setting up JWT authentication, securing API endpoints, and managing roles and claims.
+
+### 🔧 Setting Up JWT Authentication
+
+1. **Install the Required Package**:
+   - Use the following command to install the necessary JWT Bearer authentication package:
+     ```bash
+     dotnet add package Microsoft.AspNetCore.Authentication.JwtBearer
+     ```
+
+2. **Configure JWT Authentication in Program.cs**:
+   - In the service configuration section of `Program.cs`, add the following code:
+     ```csharp
+     builder.Services.AddAuthentication(options =>
+     {
+         options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+         options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+         options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+     })
+     .AddJwtBearer(options =>
+     {
+         options.TokenValidationParameters = JwtTokenService.ValidateToken(builder.Configuration);
+     });
+     ```
+
+   - In the middleware configuration section of `Program.cs`, ensure the following is added:
+     ```csharp
+     app.UseAuthentication();
+     app.UseAuthorization();
+     ```
+
+### 🔒 Securing API Endpoints
+
+1. **Using [Authorize] Attributes**:
+   - Secure your API endpoints by adding the `[Authorize]` attribute to your controllers or specific actions:
+     ```csharp
+     [Authorize]
+     public class SongsController : ControllerBase
+     {
+         // Your actions here
+     }
+     ```
+
+   - For role-based authorization, use the `[Authorize(Roles = "Admin")]` attribute:
+     ```csharp
+     [Authorize(Roles = "Admin")]
+     public class AdminController : ControllerBase
+     {
+         // Your actions here
+     }
+     ```
+
+   - You can also implement policy-based authorization:
+     ```csharp
+     [Authorize(Policy = "RequireAdminRole")]
+     public class AdminController : ControllerBase
+     {
+         // Your actions here
+     }
+     ```
+
+### 🛠 Managing Roles and Claims
+
+1. **Extending the IAccount Interface**:
+   - Extend the `IAccount` interface to include a method for generating JWT tokens and implement this method inside `IdentityAccountService`.
+
+2. **Creating and Validating JWT Tokens**:
+   - Implement the `JwtTokenService` class to handle the creation, validation, and inclusion of claims in JWT tokens.
+   - Modify the `Login` action in the `AccountController` to generate and return a JWT token upon successful authentication.
+
+3. **Seeding Roles and Claims**:
+   - In `TunifyDbContext`, override the `OnModelCreating` method to seed initial roles (e.g., "Admin", "User") and a default admin user with appropriate claims:
+     ```csharp
+     protected override void OnModelCreating(ModelBuilder modelBuilder)
+     {
+         base.OnModelCreating(modelBuilder);
+         // Seed roles and users here
+     }
+     ```
+
+   - Ensure that the migration is successful, and roles and users are correctly seeded into the database:
+     ```bash
+     dotnet ef migrations add SeedRolesAndUsers
+     dotnet ef database update
+     ```
+
+### 📖 Summary
+
+- **JWT Authentication**: Implemented JWT-based authentication to secure the platform.
+- **Securing Endpoints**: Used `[Authorize]` attributes to protect API endpoints.
+- **Roles and Claims**: Managed user roles and claims, including seeding initial roles and users into the database.
+
+By following these instructions, you ensure that only authorized users can access specific features of the Tunify Platform, enhancing the security and integrity of the application.
+
 
 
 ## 🚀 Getting Started
