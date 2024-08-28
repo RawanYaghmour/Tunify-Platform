@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Identity;
 using Tunify_Platform.Models;
 using Tunify_Platform.Models.DTO;
+using Microsoft.Identity.Client;
+using System.Security.Claims;
 namespace Tunify_Platform.Repositories.Services
 {
     public class IdentityAccountService : IAccountRepository
@@ -15,6 +17,16 @@ namespace Tunify_Platform.Repositories.Services
             _signInManager = signInManager;
         }
 
+
+        //inject JWT 
+        private JwtTokenService _jwtTokenService;
+        public IdentityAccountService(UserManager<ApplicationUser> Manager, SignInManager<ApplicationUser> signInManager, JwtTokenService jwtTokenService)
+        {
+            _userManager = Manager;
+            _signInManager = signInManager;
+            _jwtTokenService = jwtTokenService;
+        }
+
         // register
         public async Task<AccountDto> RegisterUser(RegisterDto registerDto)
         {
@@ -24,6 +36,8 @@ namespace Tunify_Platform.Repositories.Services
                 Email = registerDto.Email
             };
             var result = await _userManager.CreateAsync(user, registerDto.Password);
+            //var x = RegisterDto.Roles;
+
             if (result.Succeeded)
             {
                 return new AccountDto()
@@ -76,5 +90,21 @@ namespace Tunify_Platform.Repositories.Services
             };
         }
 
+        public async Task<AccountDto> GetTokens(ClaimsPrincipal claimsPrincipal)
+        {
+
+            var newToken = await _userManager.GetUserAsync(claimsPrincipal);
+
+            if (newToken == null)
+            {
+                throw new InvalidOperationException("This Token is not exist");
+            }
+            return new AccountDto()
+            {
+                Id = newToken.Id,
+                Username = newToken.UserName,
+                Token = await _jwtTokenService.GenerateToken(newToken, System.TimeSpan.FromMinutes(5))
+            };
+        }
     }
 }
