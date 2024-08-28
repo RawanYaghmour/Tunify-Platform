@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Tunify_Platform.Models.DTO;
@@ -44,8 +45,15 @@ namespace Tunify_Platform.Controllers
         [HttpPost("Logout")]
         public async Task<ActionResult<AccountDto>> LogOutAsync(string username)
         {
-            var newLogout = await _accountService.LogOutAsync(username);
-            return newLogout;
+            var newLogOut = await _accountService.LogOutAsync(username);
+            return newLogOut;
+        }
+
+        [Authorize(Roles = "Admin,User")]
+        [HttpGet("Profile")]
+        public async Task<ActionResult<AccountDto>> Profile()
+        {
+            return await _accountService.GetTokens(User);
         }
     }
 }

@@ -1,5 +1,8 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.CodeAnalysis.Options;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
 using System.Text.Json.Serialization;
 using Tunify_Platform.Data;
 using Tunify_Platform.Models;
@@ -24,11 +27,6 @@ namespace Tunify_Platform
             builder.Services.AddDbContext<TunifyDbContext>(optionsX => optionsX.UseSqlServer(ConnectionStringVar));
 
 
-
-           
-
-
-
             //for Repoditory pattern
             builder.Services.AddScoped<IUserRepository, UserRepository>();
             builder.Services.AddScoped<IPlaylistRepository, PlaylistRepository>();
@@ -43,6 +41,34 @@ namespace Tunify_Platform
             //builder.Services
             builder.Services.AddScoped<IAccountRepository, IdentityAccountService>();
 
+            //JWT
+            builder.Services.AddScoped<JwtTokenService>();
+
+
+            //add auth service to the app using jwt 
+            builder.Services.AddAuthentication(
+                options =>
+                {
+                    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+                    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                }
+                ).AddJwtBearer(
+                options =>
+                {
+                    options.TokenValidationParameters = JwtTokenService.ValidatToken(builder.Configuration);
+                }
+                );
+            builder.Services.AddAuthorization(options =>
+            {
+                options.AddPolicy("RequireAdminRole", policy => policy.RequireRole("Admin"));
+                options.AddPolicy("RequireUpdatePermission", policy =>
+                    policy.RequireClaim("permission", "update"));
+                options.AddPolicy("RequireFullAccess", policy =>
+                    policy.RequireClaim("permission", "full_access"));
+            });
+
+
 
 
             // swagger configuration
@@ -54,6 +80,31 @@ namespace Tunify_Platform
                     Version = "v1",
                     Description = "API for managing playlists, songs, and artists in the Tunify Platform"
                 });
+
+                options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.Http,
+                    Scheme = "bearer",
+                    BearerFormat = "JWT",
+                    In = ParameterLocation.Header,
+                    Description = "Please enter user token below."
+                });
+
+                options.AddSecurityRequirement(new OpenApiSecurityRequirement
+                    {
+                        {
+                            new OpenApiSecurityScheme
+                            {
+                                Reference = new OpenApiReference
+                                {
+                                    Type = ReferenceType.SecurityScheme,
+                                    Id = "Bearer"
+                                }
+                            },
+                            Array.Empty<string>()
+                        }
+                    });
             });
 
 
@@ -79,6 +130,7 @@ namespace Tunify_Platform
 
             //app.UseAuthentication();
             app.UseAuthentication();
+            app.UseAuthorization();
 
 
 
